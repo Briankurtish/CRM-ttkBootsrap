@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.toast import ToastNotification
 import sqlite3
 
 def on_menu_item_selected(option):
@@ -8,6 +9,55 @@ def on_menu_item_selected(option):
 root = ttk.Window(themename="superhero")
 root.title("CRM Treeview TTkBootstrap")
 root.geometry("1050x550")
+
+update_message = ToastNotification(title="Notification", 
+                          message= "The record has been updated in the database successfully",
+                          duration=3000,
+                          alert=True,
+                          
+                          )
+add_message = ToastNotification(title="Notification", 
+                          message= "The record has been added to the database successfully",
+                          duration=3000,
+                          alert=True,
+                          
+                          )
+
+#Query database
+def query_database():
+    
+    #Clear the treeview
+    for record in my_tree.get_children():
+        my_tree.delete(record)
+    
+    #Create a database or connect to one that exists
+    conn = sqlite3.connect('tree_crm.db')
+
+    #create a cursor instance 
+    #a cursor is like a little robot which you can send to go stuffs for you
+
+    c = conn.cursor()
+    
+    c.execute("SELECT rowid, * FROM customers")
+    records = c.fetchall()
+    
+    #Add our data to the screen
+    global count
+    count = 0
+
+    for record in records: 
+        if count % 2 == 0: 
+            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[1],record[2],record[0],record[4],record[5],record[6],record[7]), tags=('evenrow'))
+        else:
+            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[1],record[2],record[0],record[4],record[5],record[6],record[7]), tags=('oddrow'))
+        #increment the counter
+        count += 1
+    
+    #Commit the changes
+    conn.commit()
+
+    #Close our connection
+    conn.close()
 
 #Create sample data
 # data = [
@@ -73,36 +123,6 @@ conn.commit()
 
 #Close the connection
 conn.close()
-
-
-#Query database
-
-def query_database():
-    #Create a database or connect to one that already exists
-    conn = sqlite3.connect('crm_tree.db')
-
-    #Create a cursor instance 
-    c = conn.cursor()
-    
-    c.execute("SELECT rowid, * FROM customers ")
-    records = c.fetchall()
-    
-    #Add our data to the screen
-    global count
-    count = 0
-
-    for record in records: 
-        if count % 2 == 0: 
-            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[1],record[2],record[0],record[4],record[5],record[6],record[7]), tags=('evenrow'))
-        else:
-            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[1],record[2],record[0],record[4],record[5],record[6],record[7]), tags=('oddrow'))
-        count += 1
-        
-    #Commit the changes
-    conn.commit()
-
-    #Close the connection
-    conn.close()
 
 
 
@@ -308,17 +328,117 @@ def clear_entries():
     city_entry.delete(0, "end")
     state_entry.delete(0, "end")
     zip_entry.delete(0, "end")
+    
 
+#update the database
+def update_record():
+    #Grab the record number
+    selected = my_tree.focus()
+    #Update record
+    my_tree.item(selected, text='', values=(fn_entry.get(), ln_entry.get(), id_entry.get(), address_entry.get(), city_entry.get(), state_entry.get(), zip_entry.get(),))
+    
+    
+    #update the database 
+    #Create a database or connect to one that exists
+    conn = sqlite3.connect('tree_crm.db')
+
+    #create a cursor instance 
+    #a cursor is like a little robot which you can send to go stuffs for you
+    c = conn.cursor()
+    
+    c.execute(""" 
+            UPDATE customers SET
+            
+            first_name = :first,
+            last_name = :last,
+            address = :address,
+            city = :city,
+            state = :state,
+            zipcode = :zipcode
+            
+            WHERE oid = :oid """, 
+            
+            {
+                'first': fn_entry.get(),
+                'last' : ln_entry.get(),
+                'oid': id_entry.get(),
+                'address': address_entry.get(),
+                'city': city_entry.get(),
+                'state': state_entry.get(),
+                'zipcode': zip_entry.get(),
+            } )
+    
+    
+    
+    #Commit the changes
+    conn.commit()
+
+    #Close our connection
+    conn.close()
+    
+    #Show toast
+    update_message.show_toast()
+    
+     #Clear entry boxes
+    clear_entries()
+    
+    
+    
+
+#Add new record to database
+def add_record():
+    #Create a database or connect to one that exists
+    conn = sqlite3.connect('tree_crm.db')
+
+    #create a cursor instance 
+    #a cursor is like a little robot which you can send to go stuffs for you
+    c = conn.cursor()
+    
+     #Add new record
+    c.execute("INSERT INTO customers VALUES (:first, :last, :id, :address, :city, :state, :zipcode)", 
+
+            {
+                'first': fn_entry.get(),
+                'last' : ln_entry.get(),
+                'id': id_entry.get(),
+                'address': address_entry.get(),
+                'city': city_entry.get(),
+                'state': state_entry.get(),
+                'zipcode': zip_entry.get(),
+            }
+
+            )
+
+
+    
+    #Commit the changes
+    conn.commit()
+
+    #Close our connection
+    conn.close()
+    
+      #Clear the TreeView table
+    my_tree.delete(*my_tree.get_children())
+
+    #Refresh treeview table
+    query_database()
+
+    #show toast message
+    add_message.show_toast()
+    
+    #clear entry boxes
+    clear_entries()
+    
 
 
 #Create Button Frame
 button_frame = ttk.Labelframe(root, text="Commands", bootstyle="info")
 button_frame.pack(fill="x", expand="yes", padx=20)
 
-update_button = ttk.Button(button_frame, text="Update Record", bootstyle="primary")
+update_button = ttk.Button(button_frame, text="Update Record", bootstyle="primary", command = update_record)
 update_button.grid(row=0, column=0, padx=10, pady=10)
 
-add_button = ttk.Button(button_frame, text="Add Record", bootstyle="success")
+add_button = ttk.Button(button_frame, text="Add Record", bootstyle="success", command = add_record)
 add_button.grid(row=0, column=1, padx=10, pady=10)
 
 remove_all_button = ttk.Button(button_frame, text="Remove All Records", bootstyle="danger")
