@@ -5,6 +5,7 @@
         "borderwidth",
         "buttonbar",
         "evenrow",
+        "executemany",
         "ipadx",
         "ipady",
         "oddrow",

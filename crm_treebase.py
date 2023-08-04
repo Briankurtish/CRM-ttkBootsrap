@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import ttkbootstrap as ttk
 from ttkbootstrap.toast import ToastNotification
 import sqlite3
@@ -65,6 +66,65 @@ def query_database():
 
     #Close our connection
     conn.close()
+    
+#Function to search the database
+
+def search_records():
+    lookup_record = search_entry.get()
+    
+    #Close the search box
+    search.destroy()
+    
+    #Clear the treeview
+    for record in my_tree.get_children():
+        my_tree.delete(record)
+
+     #Create a database or connect to one that exists
+    conn = sqlite3.connect('tree_crm.db')
+
+    #create a cursor instance 
+    #a cursor is like a little robot which you can send to go stuffs for you
+
+    c = conn.cursor()
+
+    c.execute("SELECT rowid, * FROM customers WHERE last_name like ?", (lookup_record,))
+    records = c.fetchall()
+
+    #Add our data to the screen
+    global count
+    count = 0
+
+    for record in records: 
+        if count % 2 == 0: 
+            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[1],record[2],record[0],record[4],record[5],record[6],record[7]), tags=('evenrow'))
+        else:
+            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[1],record[2],record[0],record[4],record[5],record[6],record[7]), tags=('oddrow'))
+        #increment the counter
+        count += 1
+
+    #Commit the changes
+    conn.commit()
+
+    #Close our connection
+    conn.close()
+    
+def lookup_records():
+    global search_entry, search
+    search = ttk.Toplevel(root)
+    search.title("Lookup Records")
+    search.geometry("400x200")
+
+    #Create label frame
+    search_frame = ttk.LabelFrame(search, text="Last Name")
+    search_frame.pack(padx=10, pady=10)
+
+    #Add entry box
+    search_entry = ttk.Entry(search_frame, font=("Helvetica", 16))
+    search_entry.pack(padx=20, pady=20)
+
+    #Add Button
+    search_button = ttk.Button(search, text="Search Records", command=search_records)
+    search_button.pack(padx=20, pady=20)
 
 #Create sample data
 # data = [
@@ -171,9 +231,9 @@ search_menu.pack(side=tk.LEFT, padx=(10, 5), pady=5)
 search_menu_menu = ttk.Menu(search_menu)
 
 # Add menu items to the Menu widget
-search_menu_menu.add_command(label="Search", command=lambda: on_menu_item_selected("Search Option 1"))
+search_menu_menu.add_command(label="Search", command=lookup_records)
 search_menu_menu.add_separator()
-search_menu_menu.add_command(label="Reset Table", command=lambda: on_menu_item_selected("Search Option 2"))
+search_menu_menu.add_command(label="Reset Table", command=query_database)
 
 # Assign the Menu widget to the Menubutton
 search_menu["menu"] = search_menu_menu
@@ -277,12 +337,103 @@ search_label.grid(row=0, column=0, padx=10, pady=10)
 search_entry = ttk.Entry(search_frame, bootstyle="secondary")
 search_entry.grid(row=0, column=1, padx=10, pady=10)
 
-search_button = ttk.Button(search_frame, text='Search Database', bootstyle="success")
+search_button = ttk.Button(search_frame, text='Search Database', bootstyle="success", command=search_records)
 search_button.grid(row=0, column=2,  padx=10, pady=10)
 
-refresh_button = ttk.Button(search_frame, text='Refresh Database', bootstyle="secondary")
+refresh_button = ttk.Button(search_frame, text='Refresh Database', bootstyle="secondary", command=query_database)
 refresh_button.grid(row=0, column=3,  padx=10, pady=10)
 
+
+#remove many records from database
+def remove_many():
+    
+    #Add message box
+    response = messagebox.askyesno("Alert!", "Are you want to delete the selected records from the table?")
+
+    #Add logic for message box
+    if response == 1:
+        
+        #Designate Selections
+        x = my_tree.selection()
+
+         #Create List of Ids
+        ids_to_delete = []
+
+        #Add selections to ids_to_delete
+        for record in x:
+            ids_to_delete.append(my_tree.item(record, 'values')[2])
+            
+        # Delete from TreeView
+        for record in x:
+            my_tree.delete(record)
+        
+        #delete record from database
+        #Create a database or connect to one that exists
+        conn = sqlite3.connect('tree_crm.db')
+
+        #create a cursor instance 
+        #a cursor is like a little robot which you can send to go stuffs for you
+        c = conn.cursor()
+        
+        #Delete selected records from the database table
+        c.executemany("DELETE FROM customers WHERE id = ?", [(a, ) for a in ids_to_delete])
+
+        #reset list
+        ids_to_delete = []
+        
+        
+        #Commit the changes
+        conn.commit()
+
+        #Close our connection
+        conn.close()
+        
+        #Show toast
+        delete_message.show_toast()
+        
+        #Clear entry boxes
+        clear_entries()
+
+
+
+#remove table from database
+def remove_all():
+    
+    #Add message box
+    response = messagebox.askyesno("Alert!", "Are you want to delete everything from the table?")
+    
+    
+     #Add logic for message box
+    if response == 1:
+        #Clear the treeview
+        for record in my_tree.get_children():
+            my_tree.delete(record)
+        
+        #delete record from database
+        #Create a database or connect to one that exists
+        conn = sqlite3.connect('tree_crm.db')
+
+        #create a cursor instance 
+        #a cursor is like a little robot which you can send to go stuffs for you
+        c = conn.cursor()
+        
+        #Delete everything from the database table
+        c.execute("DROP TABLE customers")
+        
+        #Commit the changes
+        conn.commit()
+
+        #Close our connection
+        conn.close()
+        
+        #Show toast
+        delete_message.show_toast()
+        
+        #Clear entry boxes
+        clear_entries()
+        
+        create_table_again()
+        
 
 
 #remove one record from the database
@@ -466,6 +617,37 @@ def add_record():
     clear_entries()
     
 
+#Create table again after deletion
+def create_table_again():
+    #Create a database or connect to one that exists
+
+    conn = sqlite3.connect('tree_crm.db')
+
+    #create a cursor instance 
+    #a cursor is like a little robot which you can send to go stuffs for you
+
+    c = conn.cursor()
+
+    #Create a table
+    c.execute(""" 
+            CREATE TABLE if not exists customers (
+                first_name text,
+                last_name text,
+                id integer,
+                address text,
+                city text,
+                state text,
+                zipcode text)
+            """)
+
+    #Commit the changes
+    conn.commit()
+
+    #Close our connection
+    conn.close()
+
+    
+
 
 #Create Button Frame
 button_frame = ttk.Labelframe(root, text="Commands", bootstyle="info")
@@ -477,13 +659,13 @@ update_button.grid(row=0, column=0, padx=10, pady=10)
 add_button = ttk.Button(button_frame, text="Add Record", bootstyle="success", command = add_record)
 add_button.grid(row=0, column=1, padx=10, pady=10)
 
-remove_all_button = ttk.Button(button_frame, text="Remove All Records", bootstyle="danger")
+remove_all_button = ttk.Button(button_frame, text="Remove All Records", bootstyle="danger", command=remove_all)
 remove_all_button.grid(row=0, column=2, padx=10, pady=10)
 
 remove_one_button = ttk.Button(button_frame, text="Remove One Selected", bootstyle="warning", command=remove_one)
 remove_one_button.grid(row=0, column=3, padx=10, pady=10)
 
-remove_many_button = ttk.Button(button_frame, text="Remove Selected", bootstyle="warning")
+remove_many_button = ttk.Button(button_frame, text="Remove Selected", bootstyle="warning", command=remove_many)
 remove_many_button.grid(row=0, column=4, padx=10, pady=10)
 
 move_up_button = ttk.Button(button_frame, text="Move Up", bootstyle="info", command= up)
