@@ -133,4 +133,49 @@ for record in data:
 
 
 
+#create record label frame
+data_frame = ttk.Labelframe(root, text="Record",  bootstyle="info")
+data_frame.pack(fill="x", expand="yes", padx=20)
+
+fn_label = ttk.Label(data_frame, text="First Name")
+fn_label.grid(row=0, column=0, padx=10, pady=10)
+fn_entry = ttk.Entry(data_frame, bootstyle="info")
+fn_entry.grid(row=0, column=1, padx=10, pady=10)
+
+ln_label = ttk.Label(data_frame, text="Last Name")
+ln_label.grid(row=1, column=0, padx=10, pady=10)
+ln_entry = ttk.Entry(data_frame, bootstyle="info")
+ln_entry.grid(row=1, column=1, padx=10, pady=10)
+
+id_label = ttk.Label(data_frame, text="ID")
+id_label.grid(row=0, column=2, padx=10, pady=10)
+id_entry = ttk.Entry(data_frame, bootstyle="info")
+id_entry.grid(row=0, column=3, padx=10, pady=10)
+
+address_label = ttk.Label(data_frame, text="Address")
+address_label.grid(row=1, column=2, padx=10, pady=10)
+address_entry = ttk.Entry(data_frame, bootstyle="info")
+address_entry.grid(row=1, column=3, padx=10, pady=10)
+
+city_label = ttk.Label(data_frame, text="City")
+city_label.grid(row=0, column=4, padx=10, pady=10)
+city_entry = ttk.Entry(data_frame, bootstyle="info")
+city_entry.grid(row=0, column=5, padx=10, pady=10)
+
+state_label = ttk.Label(data_frame, text="State")
+state_label.grid(row=1, column=4, padx=10, pady=10)
+state_entry = ttk.Entry(data_frame, bootstyle="info")
+state_entry.grid(row=1, column=5, padx=10, pady=10)
+
+zip_label = ttk.Label(data_frame, text="ZipCode")
+zip_label.grid(row=1, column=6, padx=10, pady=10)
+zip_entry = ttk.Entry(data_frame, bootstyle="info")
+zip_entry.grid(row=1, column=7, padx=10, pady=10)
+
+
+
+#Create Button Frame
+
+
+
 root.mainloop()
