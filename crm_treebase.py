@@ -23,6 +23,13 @@ add_message = ToastNotification(title="Notification",
                           
                           )
 
+delete_message = ToastNotification(title="Notification", 
+                          message= "The record has been deleted from the database successfully",
+                          duration=3000,
+                          alert=True,
+                          
+                          )
+
 #Query database
 def query_database():
     
@@ -278,6 +285,35 @@ refresh_button.grid(row=0, column=3,  padx=10, pady=10)
 
 
 
+#remove one record from the database
+def remove_one():
+    #removing from treeview
+    x  = my_tree.selection()[0]
+    my_tree.delete(x)
+    
+    #removing from database
+    #Create a database or connect to one that exists
+    conn = sqlite3.connect('tree_crm.db')
+
+    #create a cursor instance 
+    #a cursor is like a little robot which you can send to go stuffs for you
+    c = conn.cursor()
+    
+    #Delete from database
+    c.execute("DELETE from customers WHERE oid =" + id_entry.get())
+    
+    #Commit the changes
+    conn.commit()
+
+    #Close our connection
+    conn.close()
+    
+    #Show toast
+    delete_message.show_toast()
+    
+    #Clear entry boxes
+    clear_entries()
+
 #Move row up
 def up():
     rows = my_tree.selection()
@@ -444,7 +480,7 @@ add_button.grid(row=0, column=1, padx=10, pady=10)
 remove_all_button = ttk.Button(button_frame, text="Remove All Records", bootstyle="danger")
 remove_all_button.grid(row=0, column=2, padx=10, pady=10)
 
-remove_one_button = ttk.Button(button_frame, text="Remove One Selected", bootstyle="warning")
+remove_one_button = ttk.Button(button_frame, text="Remove One Selected", bootstyle="warning", command=remove_one)
 remove_one_button.grid(row=0, column=3, padx=10, pady=10)
 
 remove_many_button = ttk.Button(button_frame, text="Remove Selected", bootstyle="warning")
