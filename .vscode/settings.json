@@ -10,6 +10,7 @@
         "oddrow",
         "padx",
         "pady",
+        "rowid",
         "themename",
         "ttkbootstrap",
         "yscrollcommand"
