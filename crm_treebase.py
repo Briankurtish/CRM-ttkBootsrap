@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+import sqlite3
 
 def on_menu_item_selected(option):
     print(f"Menu item selected: {option}")
@@ -7,6 +8,104 @@ def on_menu_item_selected(option):
 root = ttk.Window(themename="superhero")
 root.title("CRM Treeview TTkBootstrap")
 root.geometry("1050x550")
+
+#Create sample data
+# data = [
+#     ["Brain", "Cipher", 1, "123 Oklahoma St", "Texas", "Famagusta", 99450],
+#     ["Logan", "Paul", 2, "123 Vegas St", "Las Vegas", "Vegas", 12389],
+#     ["Derrick", "Hans", 3, "54 Nevada St", "Nevada", "Texas", 34672],
+#     ["Curry", "Jones", 4, "123 Texas St", "California", "Famagusta", 52621],
+#     ["Brain", "Cipher", 5, "123 Oklahoma St", "Texas", "Famagusta", 99450],
+#     ["Logan", "Paul", 6, "123 Vegas St", "Las Vegas", "Vegas", 12389],
+#     ["Derrick", "Hans", 7, "54 Nevada St", "Nevada", "Texas", 34672],
+#     ["Curry", "Jones", 8, "123 Texas St", "California", "Famagusta", 52621],
+#     ["Brain", "Cipher", 9, "123 Oklahoma St", "Texas", "Famagusta", 99450],
+#     ["Logan", "Paul", 10, "123 Vegas St", "Las Vegas", "Vegas", 12389],
+#     ["Derrick", "Hans", 11, "54 Nevada St", "Nevada", "Texas", 34672],
+#     ["Curry", "Jones", 12, "123 Texas St", "California", "Famagusta", 52621],
+#     ["Brain", "Cipher", 13, "123 Oklahoma St", "Texas", "Famagusta", 99450],
+#     ["Logan", "Paul", 14, "123 Vegas St", "Las Vegas", "Vegas", 12389],
+#     ["Derrick", "Hans", 15, "54 Nevada St", "Nevada", "Texas", 34672],
+#     ["Curry", "Jones", 16, "123 Texas St", "California", "Famagusta", 52621],
+# ]
+
+#Database Section
+
+#Create a database or connect to one that already exists
+conn = sqlite3.connect('crm_tree.db')
+
+#Create a cursor instance 
+c = conn.cursor()
+
+#Create Table
+c.execute(""" 
+          CREATE TABLE if not exists customers (
+              first_name text,
+              last_name text,
+              id integer,
+              address text,
+              city text,
+              state text,
+              zipcode text)
+          """)
+
+
+#Add dummy data to table
+# for record in data:
+#     c.execute("INSERT INTO customers VALUES (:first_name, :last_name, :id, :address, :city, :state, :zipcode)",
+              
+#                {
+#                 'first_name': record[0],
+#                 'last_name': record[1],
+#                 'id': record[2],
+#                 'address': record[3],
+#                 'city': record[4],
+#                 'state': record[5],
+#                 'zipcode': record[6],
+
+#               }
+              
+#               )
+
+
+#Commit the changes
+conn.commit()
+
+#Close the connection
+conn.close()
+
+
+#Query database
+
+def query_database():
+    #Create a database or connect to one that already exists
+    conn = sqlite3.connect('crm_tree.db')
+
+    #Create a cursor instance 
+    c = conn.cursor()
+    
+    c.execute("SELECT * FROM customers ")
+    records = c.fetchall()
+    
+    #Add our data to the screen
+    global count
+    count = 0
+
+    for record in records: 
+        if count % 2 == 0: 
+            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tags=('evenrow'))
+        else:
+            my_tree.insert(parent='', index='end', iid= count, text='', value=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tags=('oddrow'))
+        #increment the counter
+        count += 1
+        
+    #Commit the changes
+    conn.commit()
+
+    #Close the connection
+    conn.close()
+
+
 
 # Set the ttkbootstrap theme to 'superhero'
 style = ttk.Style()
@@ -100,39 +199,6 @@ my_tree.column("State", width=100)
 my_tree.column("ZipCode", width=100)
 
 
-
-#Create sample data
-data = [
-    ["Brain", "Cipher", 1, "123 Oklahoma St", "Texas", "Famagusta", 99450],
-    ["Logan", "Paul", 2, "123 Vegas St", "Las Vegas", "Vegas", 12389],
-    ["Derrick", "Hans", 3, "54 Nevada St", "Nevada", "Texas", 34672],
-    ["Curry", "Jones", 4, "123 Texas St", "California", "Famagusta", 52621],
-    ["Brain", "Cipher", 5, "123 Oklahoma St", "Texas", "Famagusta", 99450],
-    ["Logan", "Paul", 6, "123 Vegas St", "Las Vegas", "Vegas", 12389],
-    ["Derrick", "Hans", 7, "54 Nevada St", "Nevada", "Texas", 34672],
-    ["Curry", "Jones", 8, "123 Texas St", "California", "Famagusta", 52621],
-    ["Brain", "Cipher", 9, "123 Oklahoma St", "Texas", "Famagusta", 99450],
-    ["Logan", "Paul", 10, "123 Vegas St", "Las Vegas", "Vegas", 12389],
-    ["Derrick", "Hans", 11, "54 Nevada St", "Nevada", "Texas", 34672],
-    ["Curry", "Jones", 12, "123 Texas St", "California", "Famagusta", 52621],
-    ["Brain", "Cipher", 13, "123 Oklahoma St", "Texas", "Famagusta", 99450],
-    ["Logan", "Paul", 14, "123 Vegas St", "Las Vegas", "Vegas", 12389],
-    ["Derrick", "Hans", 15, "54 Nevada St", "Nevada", "Texas", 34672],
-    ["Curry", "Jones", 16, "123 Texas St", "California", "Famagusta", 52621],
-]
-
-
-#Add our data to the screen
-global count
-count = 0
-
-for record in data: 
-    if count % 2 == 0: 
-        my_tree.insert(parent='', index='end', iid= count, text='', value=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tags=('evenrow'))
-    else:
-         my_tree.insert(parent='', index='end', iid= count, text='', value=(record[0],record[1],record[2],record[3],record[4],record[5],record[6]), tags=('oddrow'))
-    #increment the counter
-    count += 1
 
 
 
@@ -277,5 +343,7 @@ select_record_button.grid(row=0, column=7, padx=10, pady=10)
 #Bind Treeview
 my_tree.bind("<ButtonRelease-1>", select_record)
 
+
+query_database()
 
 root.mainloop()
