@@ -2,11 +2,14 @@
     "cSpell.words": [
         "bootstyle",
         "buttonbar",
+        "evenrow",
         "ipadx",
         "ipady",
+        "oddrow",
         "padx",
         "pady",
         "themename",
-        "ttkbootstrap"
+        "ttkbootstrap",
+        "yscrollcommand"
     ]
 }
