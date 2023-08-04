@@ -6,11 +6,12 @@ def on_menu_item_selected(option):
 
 root = ttk.Window(themename="superhero")
 root.title("CRM Treeview TTkBootstrap")
-root.geometry("1000x550")
+root.geometry("1050x550")
 
 # Set the ttkbootstrap theme to 'superhero'
 style = ttk.Style()
 style.theme_use('superhero')
+
 
 # Define a custom style for the Menubutton
 style.configure('Custom.TMenubutton', foreground='white')
@@ -172,34 +173,79 @@ zip_label.grid(row=1, column=6, padx=10, pady=10)
 zip_entry = ttk.Entry(data_frame, bootstyle="info")
 zip_entry.grid(row=1, column=7, padx=10, pady=10)
 
+#create search label frame
+search_frame = ttk.Labelframe(root, text="Search by Last Name",  bootstyle="info")
+search_frame.pack(fill="x", expand="yes", padx=20)
+
+search_label = ttk.Label(search_frame, text="Search Value")
+search_label.grid(row=0, column=0, padx=10, pady=10)
+
+search_entry = ttk.Entry(search_frame, bootstyle="secondary")
+search_entry.grid(row=0, column=1, padx=10, pady=10)
+
+search_button = ttk.Button(search_frame, text='Search Database', bootstyle="success")
+search_button.grid(row=0, column=2,  padx=10, pady=10)
+
+refresh_button = ttk.Button(search_frame, text='Refresh Database', bootstyle="secondary")
+refresh_button.grid(row=0, column=3,  padx=10, pady=10)
+
+
+
+#Select Record Method
+
+def select_record():
+    #clear entry boxes
+    fn_entry.delete(0, "end")
+    ln_entry.delete(0, "end")
+    id_entry.delete(0, "end")
+    address_entry.delete(0, "end")
+    city_entry.delete(0, "end")
+    state_entry.delete(0, "end")
+    zip_entry.delete(0, "end")
+    
+    #Grab record number 
+    selected = my_tree.focus()
+    
+    #Grab record values
+    values = my_tree.item(selected, 'values')
+    
+        # Outputs to entry boxes
+    fn_entry.insert(0, values[0])
+    ln_entry.insert(0, values[1])
+    id_entry.insert(0, values[2])
+    address_entry.insert(0, values[3])
+    city_entry.insert(0, values[4])
+    state_entry.insert(0, values[5])
+    zip_entry.insert(0, values[6])
+
 
 
 #Create Button Frame
 button_frame = ttk.Labelframe(root, text="Commands", bootstyle="info")
-button_frame.pack(fill="x", expand="yes", padx=10)
+button_frame.pack(fill="x", expand="yes", padx=20)
 
-update_button = ttk.Button(button_frame, text="Update Record")
+update_button = ttk.Button(button_frame, text="Update Record", bootstyle="primary")
 update_button.grid(row=0, column=0, padx=10, pady=10)
 
-add_button = ttk.Button(button_frame, text="Add Record")
+add_button = ttk.Button(button_frame, text="Add Record", bootstyle="success")
 add_button.grid(row=0, column=1, padx=10, pady=10)
 
-remove_all_button = ttk.Button(button_frame, text="Remove All Records")
+remove_all_button = ttk.Button(button_frame, text="Remove All Records", bootstyle="danger")
 remove_all_button.grid(row=0, column=2, padx=10, pady=10)
 
-remove_one_button = ttk.Button(button_frame, text="Remove One Selected")
+remove_one_button = ttk.Button(button_frame, text="Remove One Selected", bootstyle="warning")
 remove_one_button.grid(row=0, column=3, padx=10, pady=10)
 
-remove_many_button = ttk.Button(button_frame, text="Remove Selected",)
+remove_many_button = ttk.Button(button_frame, text="Remove Selected", bootstyle="warning")
 remove_many_button.grid(row=0, column=4, padx=10, pady=10)
 
-move_up_button = ttk.Button(button_frame, text="Move Up")
+move_up_button = ttk.Button(button_frame, text="Move Up", bootstyle="info")
 move_up_button.grid(row=0, column=5, padx=10, pady=10)
 
-move_down_button = ttk.Button(button_frame, text="Move Down")
+move_down_button = ttk.Button(button_frame, text="Move Down", bootstyle="info")
 move_down_button.grid(row=0, column=6, padx=10, pady=10)
 
-select_record_button = ttk.Button(button_frame, text="Clear Entries")
+select_record_button = ttk.Button(button_frame, text="Select Record", command = select_record)
 select_record_button.grid(row=0, column=7, padx=10, pady=10)
 
 
