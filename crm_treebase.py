@@ -71,6 +71,8 @@ columns = ("First Name", "Last Name", "ID", "Address", "City", "State", "ZipCode
 my_tree = ttk.Treeview(tree_frame, bootstyle="primary", columns=columns, show="headings")
 my_tree.pack(fill="both", padx=20, pady=20)  # Adjust pack options to occupy more space
 
+
+
 #Configure the scrollbar
 tree_scroll.config(command= my_tree.yview)
 
@@ -191,6 +193,18 @@ refresh_button.grid(row=0, column=3,  padx=10, pady=10)
 
 
 
+#Move row up
+def up():
+    rows = my_tree.selection()
+    for row in rows:
+        my_tree.move(row, my_tree.parent(row), my_tree.index(row)-1)
+
+#Move row up
+def down():
+    rows = my_tree.selection()
+    for row in reversed(rows):
+        my_tree.move(row, my_tree.parent(row), my_tree.index(row)+1)
+
 #Select Record Method
 
 def select_record(e):
@@ -251,10 +265,10 @@ remove_one_button.grid(row=0, column=3, padx=10, pady=10)
 remove_many_button = ttk.Button(button_frame, text="Remove Selected", bootstyle="warning")
 remove_many_button.grid(row=0, column=4, padx=10, pady=10)
 
-move_up_button = ttk.Button(button_frame, text="Move Up", bootstyle="info")
+move_up_button = ttk.Button(button_frame, text="Move Up", bootstyle="info", command= up)
 move_up_button.grid(row=0, column=5, padx=10, pady=10)
 
-move_down_button = ttk.Button(button_frame, text="Move Down", bootstyle="info")
+move_down_button = ttk.Button(button_frame, text="Move Down", bootstyle="info", command=down)
 move_down_button.grid(row=0, column=6, padx=10, pady=10)
 
 select_record_button = ttk.Button(button_frame, text="Clear Entries", command = clear_entries)
