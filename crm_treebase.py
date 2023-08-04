@@ -175,7 +175,32 @@ zip_entry.grid(row=1, column=7, padx=10, pady=10)
 
 
 #Create Button Frame
+button_frame = ttk.Labelframe(root, text="Commands", bootstyle="info")
+button_frame.pack(fill="x", expand="yes", padx=10)
 
+update_button = ttk.Button(button_frame, text="Update Record")
+update_button.grid(row=0, column=0, padx=10, pady=10)
+
+add_button = ttk.Button(button_frame, text="Add Record")
+add_button.grid(row=0, column=1, padx=10, pady=10)
+
+remove_all_button = ttk.Button(button_frame, text="Remove All Records")
+remove_all_button.grid(row=0, column=2, padx=10, pady=10)
+
+remove_one_button = ttk.Button(button_frame, text="Remove One Selected")
+remove_one_button.grid(row=0, column=3, padx=10, pady=10)
+
+remove_many_button = ttk.Button(button_frame, text="Remove Selected",)
+remove_many_button.grid(row=0, column=4, padx=10, pady=10)
+
+move_up_button = ttk.Button(button_frame, text="Move Up")
+move_up_button.grid(row=0, column=5, padx=10, pady=10)
+
+move_down_button = ttk.Button(button_frame, text="Move Down")
+move_down_button.grid(row=0, column=6, padx=10, pady=10)
+
+select_record_button = ttk.Button(button_frame, text="Clear Entries")
+select_record_button.grid(row=0, column=7, padx=10, pady=10)
 
 
 root.mainloop()
